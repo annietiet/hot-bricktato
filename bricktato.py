@@ -15,16 +15,15 @@ canvas.pack()
 frame = tk.Frame(root, bg=BG_COLOR)
 frame.place(relwidth= 1, relheight=1)
 
-title = tk.Label(frame, text="HOT BRICKTATO", bg=BG_COLOR, pady= 10, font=('Arial', 50))
+title = tk.Label(frame, text="LET'S PLAY HOT BRICKTATO", bg=BG_COLOR, pady= 10, font=('Arial', 30))
 title.pack()
 
-image1 = Image.open("images/rickyt.png")
-image1TK = Image.TK.PhotoImage(image1)
+load1 = Image.open("images/rickyt.png")
+render1 = ImageTk.PhotoImage(load1)
 
-bricky = tkinter.Label(image=image1TK)
-bricky.image = image1TK
-
-bricky.place(relx = .5, rely = .5)
+bricky = tk.Label(frame, image=render1, bg=BG_COLOR)
+bricky.image = render1
+bricky.place(relx= .5, rely= .5, anchor="center")
 
 
 
