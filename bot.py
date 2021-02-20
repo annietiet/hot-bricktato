@@ -5,9 +5,9 @@ from twitchio.ext import commands
 bot = commands.Bot(
     irc_token=os.environ['TMI_TOKEN'],
     client_id=os.environ['CLIENT_ID'],
-    nick=os.environ['BOT_NICK'],
+    nick='hot_bricktato',
     prefix=os.environ['BOT_PREFIX'],
-    initial_channels=[os.environ['CHANNEL']]
+    initial_channels=['92soo'],
 )
 
 @bot.event
@@ -18,7 +18,7 @@ async def event_message(ctx):
 @bot.event
 async def bot_ready():
     'Called once when the bot goes online.'
-    print(f"{os.environ['BOT_NICK']} is online!")
+    print(bot.nick + " is online!")
     ws = bot._ws  # this is only needed to send messages within event_ready
     await ws.send_privmsg(os.environ['CHANNEL'], f"/me has arrived! Is it getting hot in here?")
 
