@@ -1,9 +1,7 @@
 import os
 from twitchio.ext import commands
-import game
-from timer import Timer
+import random
 #pipenv run python bot.py
-
 
 bot = commands.Bot(
     irc_token=os.environ['TMI_TOKEN'],
@@ -17,6 +15,8 @@ collecting_players = False
 game_ongoing = False
 queueing = False
 players = set()
+has_potato = None
+potato_hp = 0
 
 @bot.event
 async def event_message(ctx):
@@ -54,6 +54,8 @@ async def join_command(ctx):
         await ctx.channel.send(f"@{ctx.author.name} has joined the hot bricktato game")
     elif game_ongoing is True:
         await ctx.channel.send("The hot bricktato is already being passed. Please try joining again later.")
+    else:
+        await ctx.send("Use !open command to start a game of hot bricktato! Join after that.")
 
 
 @bot.command(name='leave')
@@ -68,11 +70,11 @@ async def leave_command(ctx):
         remove_player(ctx.author.name)
         await ctx.channel.send(f"@{ctx.author.name} does not want to play anymore")
 
-
 @bot.command(name='close')
 async def close_command(ctx):
     global game_ongoing
     global queueing
+    global has_potato
     if game_ongoing:
         await ctx.channel.send("The hot bricktato is already being passed. Please try again later.")
     elif queueing is False:
@@ -80,19 +82,52 @@ async def close_command(ctx):
     else:
         queueing = False
         game_ongoing = True
+        randomize_health()
         await ctx.channel.send("The hot bricktato is on fire!")
+        has_potato = randomize_player()
+        await ctx.channel.send(f"@{has_potato} has the hot bricktato")
 
 
 @bot.command(name='pass')
 async def pass_command(ctx):
+    global game_ongoing
+    global queueing
+    global has_potato
+    global players
+    if game_ongoing and ctx.author is has_potato:
+        randomize_pass_loss()
+        if potato_hp < 0:
+            await ctx.channel.send(f"@{ctx.author.name} can't take the heat. They're out of the game!")
+            remove_player(ctx.author)
+        else:
+            await ctx.channel.send(f"@{ctx.author.name} passed the bricktato.")
+            has_potato = randomize_player()
+            if len(players) == 1:
+                await ctx.channel.send(f"@{has_potato} won the game.")
+                game_ongoing = False
+            else:
+                await ctx.channel.send(f"@{has_potato} has the hot bricktato")
 
+def randomize_health():
+    global potato_hp
+    potato_hp = random.randint(1, 100)
 
-def add_player(self, username):
-    self.players.add(username)
+def randomize_pass_loss():
+    global potato_hp
+    potato_hp -= random.randint(0, potato_hp-1)
 
-def remove_player(self, username):
-    if username in self.players:
-        self.players.remove(username)
+def add_player(username):
+    global players
+    players.add(username)
+
+def remove_player(username):
+    global players
+    if username in players:
+        players.remove(username)
+
+def randomize_player():
+    global players
+    return random.choice(tuple(players))
 
 if __name__ == "__main__":
     bot.run()
