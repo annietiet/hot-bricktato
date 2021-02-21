@@ -1,2 +1,1 @@
 twitchio==1.2.1
-Pillow==8.1.0
